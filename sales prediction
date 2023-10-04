@@ -1,0 +1,77 @@
+import pandas as pd
+import random
+from datetime import datetime, timedelta
+num_records = 1000
+dates = []
+product_ids = []
+store_ids = []
+sales_quantities = []
+for _ in range(num_records):
+start_date = datetime(2020, 1, 1)
+end_date = datetime(2021, 12, 31)
+random_date = start_date + timedelta(days=random.randint(0, (end_date - start_date).days)
+product_id = random.randint(1, 100)
+store_id = random.randint(1, 10)
+sales_quantity = random.randint(1, 100)
+dates.append(random_date)
+product_ids.append(product_id)
+store_ids.append(store_id)
+sales_quantities.append(sales_quantity)
+sales_data = pd.DataFrame({
+&#39;Date&#39;: dates,
+&#39;Product_ID&#39;: product_ids,
+&#39;Store_ID&#39;: store_ids,
+&#39;Sales_Quantity&#39;: sales_quantities
+})
+print(sales_data.head())
+sales_data.to_csv(&#39;sales_data.csv&#39;, index=False)
+
+2) Data Preprocessing: Clean and preprocess the data, handle missing values, and convert
+categorical features into numerical representations.
+missing_values = sales_data.isnull().sum()
+sales_data = sales_data.dropna()
+sales_data[&#39;Sales_Quantity&#39;].fillna(sales_data[&#39;Sales_Quantity&#39;].mean(), inplace=True)
+sales_data[&#39;Product_ID&#39;].fillna(&#39;Unknown&#39;, inplace=True)
+sales_data = pd.get_dummies(sales_data, columns=[&#39;Product_ID&#39;, &#39;Store_ID&#39;])
+from sklearn.preprocessing import LabelEncoder
+label_encoder = LabelEncoder()
+sales_data[&#39;Product_ID&#39;] = label_encoder.fit_transform(sales_data[&#39;Product_ID&#39;])
+sales_data[&#39;Store_ID&#39;] = label_encoder.fit_transform(sales_data[&#39;Store_ID&#39;])
+from sklearn.preprocessing import MinMaxScaler
+scaler = MinMaxScaler()
+sales_data[&#39;Sales_Quantity&#39;] = scaler.fit_transform(sales_data[[&#39;Sales_Quantity&#39;]])
+3) Feature Engineering: Create additional features that could enhance the predictive power of the
+model, such as time-based features (e.g., day of the week, month).
+import pandas as pd
+sales_data[&#39;Date&#39;] = pd.to_datetime(sales_data[&#39;Date&#39;]
+sales_data[&#39;Year&#39;] = sales_data[&#39;Date&#39;].dt.year
+sales_data[&#39;Month&#39;] = sales_data[&#39;Date&#39;].dt.month
+sales_data[&#39;Day&#39;] = sales_data[&#39;Date&#39;].dt.day
+sales_data[&#39;Day_of_Week&#39;] = sales_data[&#39;Date&#39;].dt.dayofweek # Monday is 0, Sunday is 6
+sales_data[&#39;Week_of_Year&#39;] = sales_data[&#39;Date&#39;].dt.weekofyear
+sales_data[&#39;Quarter&#39;] = sales_data[&#39;Date&#39;].dt.quarter
+sales_data[&#39;Is_Weekend&#39;] = sales_data[&#39;Day_of_Week&#39;].apply(lambda x: 1 if x &gt;= 5 else 0)
+1. 4) Model Selection: Choose suitable time series forecasting algorithms (e.g., ARIMA,
+Exponential Smoothing) for predicting future sales.
+
+from pandas import read_csv
+from pandas import datetime
+from matplotlib import pyplot
+from pandas.plotting import autocorrelation_plot
+ 
+def parser(x):
+return datetime.strptime(&#39;190&#39;+x, &#39;%Y-%m&#39;)
+ 
+series = read_csv(&#39;shampoo-sales.csv&#39;, header=0, parse_dates=[0], index_col=0,
+squeeze=True, date_parser=parser)
+autocorrelation_plot(series)
+pyplot.show()
+5
+import numpy as np
+actual = np.array([actual_values]) # Replace with your actual values
+forecast = np.array([forecast_values]) # Replace with your forecasted values
+mae = np.mean(np.abs(actual - forecast))
+rmse = np.sqrt(np.mean((actual - forecast) ** 2))
+
+print(&quot;MAE:&quot;, mae)
+print(&quot;RMSE:&quot;, rmse)
